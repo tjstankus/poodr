@@ -52,7 +52,7 @@ puts Gear.new(52, 11, 24, 1.25).gear_inches
 # -> 125.272727272727
 
 ############## Page 20 ##############
-puts Gear.new(52, 11).ratio # didn't this used to work?
+# puts Gear.new(52, 11).ratio # didn't this used to work?
 # ArgumentError: wrong number of arguments (2 for 4)
 #	 from (irb):20:in `initialize'
 #	 from (irb):20:in `new'
@@ -240,4 +240,55 @@ puts Gear.new(52, 11, @wheel).gear_inches
 
 puts Gear.new(52, 11).ratio
 # -> 4.72727272727273
+
+############## My Code ##############
+
+# My guess at refactoring when the gear_inches behavior was introduced.
+
+class Gear
+  attr_reader :chainring, :cog
+  def initialize(chainring, cog)
+    @chainring = chainring
+    @cog = cog
+  end
+
+  def ratio
+    chainring / cog.to_f
+  end
+
+  def gear_inches(wheel)
+    ratio * wheel.diameter
+  end
+end
+
+Tire = Struct.new(:diameter)
+Rim = Struct.new(:diameter)
+
+class Wheel
+  attr_reader :rim, :tire
+
+  def initialize(rim, tire)
+    @rim = rim
+    @tire = tire
+  end
+
+  def diameter
+    rim.diameter + ( 2 * tire.diameter)
+  end
+
+  def circumference
+    diameter * Math::PI
+  end
+end
+
+gear = Gear.new(52, 11)
+puts "Gear ratio: #{gear.ratio}" # => 4.7272727272727275
+
+rim = Rim.new(17)
+tire = Tire.new(1.3)
+wheel = Wheel.new(rim, tire)
+puts "Wheel diameter: #{wheel.diameter}" # => 19.6
+puts "Wheel circumference: #{wheel.circumference}" # => 61.57521601035995
+
+puts "Gear inches: #{gear.gear_inches(wheel)}" # => 92.65454545454547
 
