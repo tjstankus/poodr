@@ -297,3 +297,49 @@ class Wheel
 end
 
 Wheel.new(26, 1.5, 52, 11).gear_inches
+
+############## My Code ##############
+
+# To DRY initialize methods and defaults up, use Virtus
+
+class Gear
+  attr_reader :chainring, :cog
+
+  def initialize(args = {})
+    @chainring = args.fetch(:chainring, defaults[:chainring])
+    @cog       = args.fetch(:cog, defaults[:cog])
+  end
+
+  def defaults
+    { chainring: 40, cog: 18 }
+  end
+
+  def gear_inches(diameter)
+    ratio * diameter
+  end
+
+  def ratio
+    chainring / cog.to_f
+  end
+end
+
+class Wheel
+  attr_reader :rim, :tire
+
+  def initialize(args = {})
+    @rim = args.fetch(:rim, defaults[:rim])
+    @tire = args.fetch(:tire, defaults[:tire])
+  end
+
+  def defaults
+    { rim: 26, tire: 1.5 }
+  end
+
+  def diameter
+    rim + (tire * 2)
+  end
+end
+
+wheel = Wheel.new(rim: 26, tire: 1.5)
+gear = Gear.new(chainring: 52, cog: 11)
+puts gear.gear_inches(wheel.diameter) # => 137.0909090909091
